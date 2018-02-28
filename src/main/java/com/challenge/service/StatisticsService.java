@@ -88,16 +88,15 @@ public class StatisticsService {
     }
 
     /**
-     * Checks if an {@code Instant} is in before another, but is not older then a predefined threshold.
+     * Checks if an {@code Instant} is predefined threshold period of time, before another.
      *
      * @param now             the instant for which to check against
      * @param transactionTime the instant for which to check
-     * @return true if the Instant is in the time interval
+     * @return true if the Instant is in the time interval (including the interval ends), false otherwise
      */
     private boolean isValidTimestamp(Instant now, Instant transactionTime) {
-        Instant thresholdTime = getStatisticsThresholdStartTime(now);
-
-        return transactionTime.isBefore(now) && transactionTime.isAfter(thresholdTime);
+        long until = transactionTime.until(now, ChronoUnit.SECONDS);
+        return until <= transactionTtl && until >= 0;
     }
 
     /**
